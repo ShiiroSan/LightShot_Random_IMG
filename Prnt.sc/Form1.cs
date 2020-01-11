@@ -18,8 +18,6 @@ namespace Prnt.sc
         public Image displayImg;
         public ArrayList linkHistoryList = new ArrayList();
         public ArrayList imageHistoryList = new ArrayList();
-        public int picNum = 1;
-        public string picChar = "aa";
         public bool printToDbgConsole = false;
 
         public Form1()
@@ -131,11 +129,11 @@ namespace Prnt.sc
         {
             string urlImg;
             string notExistingPic = $"//st.prntscr.com/2019/11/26/0154/img/0_173a7b_211be8ff.png";
+            string ScrVal;
             do
             {
-                picNum = await GetRand(9999);
-                picChar = await GetRandChar();
-                urlImg = await PicURLAsync(picNum, picChar);
+                ScrVal = await GetRandScrAsync();
+                urlImg = await PicURLAsync(ScrVal);
                 Console.WriteLine(urlImg);
             } while (urlImg == notExistingPic || urlImg == "");
             OutputImg(urlImg);
@@ -188,40 +186,45 @@ namespace Prnt.sc
             return "";
         }
 
-        private async Task<int> GetRand(int iMax)
+        private async Task<int> GetRand()
         {
-            int randVal;
-            string netRandVal = await GetPageAsync($"https://www.random.org/integers/?num=1&min=0000&max={iMax}&col=1&base=10&format=plain&rnd=new");
-            randVal = int.Parse(netRandVal);
-            return randVal;
+            return int.Parse(await GetPageAsync($"https://www.random.org/integers/?num=1&min=0&max=9&col=1&base=10&format=plain&rnd=new"));
         }
 
         private async Task<string> GetRandChar()
         {
-            return (await GetPageAsync($"https://www.random.org/strings/?num=1&len=2&loweralpha=on&format=html&rnd=new&format=plain")).ToString().Trim();
+            return (await GetPageAsync($"https://www.random.org/strings/?num=1&len=1&loweralpha=on&format=html&rnd=new&format=plain")).ToString().Trim();
+        }
+
+        private async Task<string> GetRandScrAsync()
+        {
+            string randScrVal = "";
+            int MAXSCRVALUE = 6;
+            for (int i = 0; i < MAXSCRVALUE; i++)
+            {
+                randScrVal += (new Random().Next(1) == 0 ? (await GetRandChar()) : (await GetRand()).ToString());
+            }
+            return randScrVal;
         }
 
         private async Task<string> RandPicURLAsync()
         {
             string urlImg;
-            int numRand;
-            string randChar;
+            string randScr;
             string notExistingPic = $"//st.prntscr.com/2019/11/26/0154/img/0_173a7b_211be8ff.png";
             do
             {
-                numRand = await GetRand(9999);
-                randChar = await GetRandChar();
-                urlImg = await PicURLAsync(numRand, randChar);
+                randScr = await GetRandScrAsync();
+                urlImg = await PicURLAsync(randScr);
             } while (urlImg == notExistingPic);
-            picNum = numRand;
             return urlImg;
         }
 
-        private async Task<string> PicURLAsync(int picNum, string picChar)
+        private async Task<string> PicURLAsync(string RandScr)
         {
             Match regexOut;
             string urlImg;
-            urlImg = $"{urlRoot}/{picChar}{picNum}";
+            urlImg = $"{urlRoot}/{RandScr}";
             string sourcePage = await GetPageAsync(urlImg);
             string pattern = @"<img class=""no-click screenshot-image"" src=""(.*?)(?="")";
             RegexOptions options = RegexOptions.Multiline;
@@ -238,12 +241,6 @@ namespace Prnt.sc
         private void AddToListBox(string strToAdd)
         {
             listView1.Items.Add(linkHistoryList[linkHistoryList.Count - 1].ToString());
-        }
-
-        private async Task<string> ShortenLinkAsync(string url)
-        {
-            string shortenenLink = await Url.GetShortenedUrl(url);
-            return shortenenLink;
         }
 
         private async void ListView1_SelectedIndexChangedAsync(object sender, EventArgs e)
@@ -307,29 +304,6 @@ namespace Prnt.sc
                 printToDbgConsole = false;
             }
         }
-
-        private async void button7_ClickAsync(object sender, EventArgs e)
-        {
-            string urlPic;
-            do
-            {
-                picNum--;
-                urlPic = await PicURLAsync(picNum, picChar);
-            } while (urlPic == "");
-            OutputImg(urlPic);
-        }
-
-        private async void button8_ClickAsync(object sender, EventArgs e)
-        {
-            string urlPic;
-            do
-            {
-                picNum++;
-                urlPic = await PicURLAsync(picNum, picChar);
-            } while (urlPic == "");
-            OutputImg(urlPic);
-        }
-
         private async void checkBox1_CheckedChangedAsync(object sender, EventArgs e)
         {
             if (checkBox1.Checked)
