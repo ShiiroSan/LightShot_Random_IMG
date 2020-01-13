@@ -1,7 +1,7 @@
 # LightShot Random Image
 *This is more or less a PoC, if it doesn't work anymore this repo will just get archived.*\
 I just made this to demonstrate that [LightShot](https://prnt.sc/) is **clearly not safe**.\
-As [LightShot](https://prnt.sc/) host image forever, you can get them directly. This means anything you post on it can by seen by everyone.
+As [LightShot](https://prnt.sc/) host image forever, you can get them directly. This means anything you post on it can be seen by everyone.
 Remember those nudes you posted before? 🤷
 
 *I clearly recommend to use [ShareX](https://getsharex.com/).*
